@@ -3,9 +3,8 @@
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Active-success)
-![GitHub last commit](https://img.shields.io/github/last-commit/yourusername/customer-segmentation)
+![GitHub last commit](https://img.shields.io/github/last-commit/RajeshLoganathan30/Python-Customer-Segmentation)
 
----
 
 ## ✅ **Overview**
 This project demonstrates **Customer Segmentation** using **K-Means Clustering** on the **Mall Customers Dataset**.  
