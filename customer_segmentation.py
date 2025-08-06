@@ -108,4 +108,8 @@ print(df.groupby('Cluster').mean(numeric_only=True))
 print("\nGender distribution by cluster:")
 print(df.groupby(['Cluster', 'Gender']).size().unstack())
 
+<<<<<<< HEAD
 # Not saving the clustered file as per your request
+=======
+# Not saving the clustered file as per your request
+>>>>>>> e9c1cf5 (ADD RESULTS)
