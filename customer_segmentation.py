@@ -1,75 +1,111 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-# Load dataset
+# Load the dataset
 df = pd.read_csv('Mall_Customers.csv')
 
-# EDA
+# EDA: Print first few rows and summary
+print("First 5 rows of data:")
 print(df.head())
-print(df.describe())
+print("\nDataset Info:")
 print(df.info())
+print("\nSummary Statistics:")
+print(df.describe())
 
-# Visualizations
+# Gender distribution
 plt.figure(figsize=(6,4))
 sns.countplot(x='Gender', data=df)
 plt.title('Gender Distribution')
-plt.show()
+plt.savefig('gender_distribution.png')
+plt.close()
 
+# Age distribution
 plt.figure(figsize=(6,4))
 sns.histplot(df['Age'], bins=20, kde=True)
 plt.title('Age Distribution')
-plt.show()
+plt.savefig('age_distribution.png')
+plt.close()
 
+# Annual Income distribution
 plt.figure(figsize=(6,4))
 sns.histplot(df['Annual Income (k$)'], bins=20, kde=True)
-plt.title('Annual Income Distribution')
-plt.show()
+plt.title('Annual Income (k$) Distribution')
+plt.savefig('income_distribution.png')
+plt.close()
 
+# Spending Score distribution
 plt.figure(figsize=(6,4))
 sns.histplot(df['Spending Score (1-100)'], bins=20, kde=True)
 plt.title('Spending Score Distribution')
-plt.show()
+plt.savefig('spending_score_distribution.png')
+plt.close()
 
-# K-means clustering on Annual Income and Spending Score
-X = df[['Annual Income (k$)', 'Spending Score (1-100)']]
+# Encode Gender
+df['Gender_Code'] = df['Gender'].map({'Female': 0, 'Male': 1})
 
-# Elbow Method
-wcss = []
-for i in range(1,11):
-    kmeans = KMeans(n_clusters=i, init='k-means++', random_state=42)
-    kmeans.fit(X)
-    wcss.append(kmeans.inertia_)
-plt.figure(figsize=(8,5))
-plt.plot(range(1,11), wcss, marker='o')
-plt.title('Elbow Method')
+# Select features for clustering
+features = ['Age', 'Annual Income (k$)', 'Spending Score (1-100)', 'Gender_Code']
+X = df[features]
+
+# Standardize features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Elbow Method to find optimal number of clusters
+inertia = []
+K = range(1, 11)
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X_scaled)
+    inertia.append(kmeans.inertia_)
+
+plt.figure(figsize=(6,4))
+plt.plot(K, inertia, 'bo-')
 plt.xlabel('Number of clusters')
-plt.ylabel('WCSS')
-plt.show()
+plt.ylabel('Inertia')
+plt.title('Elbow Method For Optimal k')
+plt.savefig('elbow_method.png')
+plt.close()
 
-# Fit KMeans (use k=5 based on elbow plot)
-kmeans = KMeans(n_clusters=5, init='k-means++', random_state=42)
-y_kmeans = kmeans.fit_predict(X)
+# Choose optimal k (e.g., k=5)
+optimal_k = 5
+kmeans = KMeans(n_clusters=optimal_k, random_state=42)
+df['Cluster'] = kmeans.fit_predict(X_scaled)
 
-# Add cluster to dataframe
-df['Cluster'] = y_kmeans
-
-# Visualize Clusters
-plt.figure(figsize=(8,6))
-colors = ['red', 'blue', 'green', 'cyan', 'magenta']
-for i in range(5):
-    plt.scatter(X.values[y_kmeans == i, 0], X.values[y_kmeans == i, 1],
-                s=50, c=colors[i], label=f'Cluster {i}')
-plt.scatter(kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1],
-            s=200, c='yellow', marker='*', label='Centroids')
-plt.title('Customer Segments')
+# Visualize clusters (using Annual Income and Spending Score only)
+plt.figure(figsize=(8, 6))
+sns.scatterplot(
+    x='Annual Income (k$)', 
+    y='Spending Score (1-100)', 
+    hue='Cluster', 
+    data=df, 
+    palette='tab10', 
+    s=60
+)
+plt.title('Clusters of Customers')
 plt.xlabel('Annual Income (k$)')
 plt.ylabel('Spending Score (1-100)')
-plt.legend()
-plt.show()
 
-# Segment interpretation
-print(df.groupby('Cluster').mean())
+# Plot cluster centers
+centers = scaler.inverse_transform(kmeans.cluster_centers_)
+plt.scatter(
+    centers[:, features.index('Annual Income (k$)')],
+    centers[:, features.index('Spending Score (1-100)')],
+    c='black', s=200, alpha=0.6, marker='X', label='Centroids'
+)
+plt.legend()
+plt.savefig('customer_clusters.png')
+plt.close()
+
+# Cluster summary statistics (numeric columns only)
+print("\nCluster Summary (means):")
+print(df.groupby('Cluster').mean(numeric_only=True))
+
+# Gender distribution by cluster
+print("\nGender distribution by cluster:")
+print(df.groupby(['Cluster', 'Gender']).size().unstack())
+
+# Not saving the clustered file as per your request
