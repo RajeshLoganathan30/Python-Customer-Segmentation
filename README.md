@@ -64,9 +64,28 @@ The goal is to segment customers based on their **demographics, income, and spen
   - `scikit-learn` → K-Means, scaling  
 
 ---
+## 📊 Customer Segment Results
 
-## ▶ **How to Run**
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/yourusername/customer-segmentation.git
-   cd customer-segmentation
+### 1️⃣ Cluster Visualization - Customer Clusters beased on Spending Score and Annual Income
+![Cluster Visualization](customer_clusters.png)
+
+---
+
+### 2️⃣ Elbow Method for Optimal K
+![Elbow Method](elbow_method.png)
+
+---
+
+### 3️⃣ Age Distribution Across Segments
+![Age Distribution](age_distribution.png)
+
+---
+
+### 4️⃣ Annual Income Distribution by Cluster
+![Income Distribution](income_distribution.png)
+
+---
+
+### 5️⃣ Gender Distribution by Cluster
+![Spending Score Distribution](gender_distribution.png)
+
